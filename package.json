@@ -1,0 +1,24 @@
+{
+  "name": "mobile-avatar-crop-box",
+  "version": "1.0.0",
+  "description": "a mobile avatar crop tool",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack --config webpack.config.js",
+    "test": "react-scripts test --env=jsdom",
+    "lint": "eslint src",
+    "lint:create": "eslint --init"
+  },
+  "author": "JustinWu",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.10.2",
+    "@babel/preset-env": "^7.10.2",
+    "babel-loader": "^8.1.0",
+    "eslint": "6.8.0",
+    "eslint-config-airbnb-base": "14.1.0",
+    "eslint-plugin-import": "^2.20.1",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11"
+  }
+}

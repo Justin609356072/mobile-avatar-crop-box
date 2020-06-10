@@ -1,0 +1,43 @@
+<!doctype html>
+  <html>
+    <head>
+     <title>demo01</title>
+     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;" name="viewport" />
+     <script src="../../dist/main.js"></script>
+    </head>
+    <body>
+     <script>
+      var link='https://yun.dui88.com/h5/miniprogram/kejiji/images/homeimg.png';
+      var a = 3;
+      const demoInstance = new CropBox.default({isCircle: true})
+      demoInstance.open(link)
+      // demoInstance.rotate()
+      // demoInstance.initDynamicPosition()
+      // console.log('demoInstance: ', demoInstance);
+
+
+      // window.onload = function() {
+      //   // 阻止双击放大
+      //   var lastTouchEnd = 0;
+      //   document.addEventListener('touchstart', function(event) {
+      //       if (event.touches.length > 1) {
+      //           event.preventDefault();
+      //       }
+      //   });
+      //   document.addEventListener('touchend', function(event) {
+      //       var now = (new Date()).getTime();
+      //       if (now - lastTouchEnd <= 300) {
+      //           event.preventDefault();
+      //       }
+      //       lastTouchEnd = now;
+      //   }, false);
+
+      //   // 阻止双指放大
+      //   document.addEventListener('gesturestart', function(event) {
+      //       event.preventDefault();
+      //   });
+      // }
+
+      </script>
+    </body>
+  </html>
