@@ -18,5 +18,7 @@ export function loadImage(url) {
  * @returns {Object} DOM element
  */
 export function getParentNode(id) {
+  // If the id exists, append it under the DOM corresponding to the id,
+  // otherwise append it to the document
   return id ? document.getElementById(id) : document.body;
 }

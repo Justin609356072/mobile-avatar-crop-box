@@ -1,6 +1,8 @@
 /* eslint-disable no-underscore-dangle */
-import { initStaticPosition, handleZoom, handleOverflow } from './function';
-import { loadImage } from './tool';
+import {
+  initStaticPosition, handleZoom, handleOverflow, getImage,
+} from './function';
+import { loadImage, getParentNode } from './tool';
 
 // todo resize
 // Safari 缩放兼容性,Object.assign
@@ -44,18 +46,18 @@ import { loadImage } from './tool';
 */
 function initTouchInfo(isScaleInit = true) {
   const result = {
-    startWidth: 0, // 缩放开始时候图片宽度比例
-    startDistance: 0, // 缩放开始时候两指之间距离（保存具体数值）
-    startLeft: 0, // 缩放开始时候图片距离左边的比例
-    startTop: 0, // 缩放开始时候图片距离顶部的比例
-    startCenterX: 0, // 缩放开始时候两指触碰中点水平位置（保存具体数值）
-    startCenterY: 0, // 缩放开始时候两指触碰中点竖直位置（保存具体数值）
-    curDistance: 0, // 缩放进行中记录两指之间距离（保存具体数值）
+    startWidth: 0, // Image width ratio at the beginning of zooming
+    startDistance: 0, // The distance between two fingers when zooming starts (save specific values)
+    startLeft: 0, // The ratio of the picture to the left when zooming starts
+    startTop: 0, // The ratio of the picture to the top when zooming starts
+    startCenterX: 0, // When zooming starts, two fingers touch the horizontal position of the midpoint (save specific values)
+    startCenterY: 0, // When zooming starts, two fingers touch the vertical position of the midpoint (save specific value)
+    curDistance: 0, // Record the distance between two fingers during zooming (save specific values)
   };
   if (!isScaleInit) {
     Object.assign(result, {
-      curMoveX: 0, // 用于图片的平移（保存具体数值）
-      curMoveY: 0, // 用于图片的平移（保存具体数值）
+      curMoveX: 0, // Used for moving of pictures (save specific values)
+      curMoveY: 0, // Used for moving of pictures (save specific values)
     });
   }
   return result;
@@ -65,18 +67,15 @@ export default class MobileAvatarCropBox {
   constructor(options = {}) {
     const {
       id, // DOM id
-      isCircle = false, // 裁剪区域是否展示圆形
-      boxWidth = window.screen.availWidth, // 容器宽度
-      boxHeight = window.screen.availHeight, // 容器高度
-      cropAspectRatio = 1, // 裁剪的宽高比
-      cropSizeRatio = 0.8, // 裁剪框占外部容器的大小比例
-      // showOptionBar = true, // 是否展示操作框
+      isCircle = false,
+      boxWidth = window.screen.availWidth,
+      boxHeight = window.screen.availHeight,
+      cropAspectRatio = 1,
+      cropSizeRatio = 0.8, // The proportion of the size of the crop to the box
+      // showOptionBar = true,
     } = options;
 
     this._id = id || null;
-    this._dom = {};
-    this._img = {};
-    this._dynamicPosition = {};
     // todo 减掉showOptionBar高度
     this._staticPosition = initStaticPosition({
       boxWidth, boxHeight, cropAspectRatio, cropSizeRatio, isCircle,
@@ -85,22 +84,6 @@ export default class MobileAvatarCropBox {
     this.handleTouchMove = this.handleTouchMove.bind(this);
     this.handleTouchEnd = this.handleTouchEnd.bind(this);
   }
-
-  // rotate(isClockwise) {
-
-  // }
-
-  // reset() {
-
-  // }
-
-  // save() {
-
-  // }
-
-  // cancel() {
-
-  // }
 
   initDom({ imgLink }) {
     const domList = {
@@ -123,12 +106,11 @@ export default class MobileAvatarCropBox {
         }
       });
     });
-    // id存在在对应的DOM下追加，否则追加在document上
-    // box 内的结构如下
-    // box---- bgPictureContainer -- bgPicture
-    //     |
-    //      -- box -- moveImg
-    const outContainer = this._id ? document.getElementById(this._id) : document.body;
+    // The structure inside the box is as follows:
+    // box
+    //   |____bgPictureContainer____bgPicture
+    //   |____crop____moveImg
+    const outContainer = getParentNode(this._id);
     outContainer.appendChild(this._dom.box);
     this._dom.box.appendChild(this._dom.bgPictureContainer);
     this._dom.bgPictureContainer.appendChild(this._dom.bgPicture);
