@@ -269,11 +269,22 @@ export default class MobileAvatarCropBox {
   }
 
   async open(link) {
+    if (this._dom && this._dom.box) {
+      return;
+    }
+    if (!link) {
+      console.warn('Call the open method, please pass the picture parameters');
+      return;
+    }
+    this._dom = {};
+    this._img = {};
+    this._dynamicPosition = {};
     // todo 图片加载异常处理
     const img = await loadImage(link);
     this._img = {
       src: img.src,
       aspectRatio: img.width / img.height,
+      originalPicture: img,
     };
     this.initDom({ imgLink: img.src });
     this.updateStaticPositionInfo();
@@ -295,5 +306,13 @@ export default class MobileAvatarCropBox {
 
   destroy() {
     this.removeTouchEvent();
+    const outContainer = getParentNode(this._id);
+    outContainer.removeChild(this._dom.box);
+    this._dom = {};
+  }
+
+  async save() {
+    const result = await getImage(this._img, this._staticPosition.crop, this._dynamicPosition);
+    console.log(result);
   }
 }
