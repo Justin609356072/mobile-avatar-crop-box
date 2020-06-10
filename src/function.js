@@ -1,20 +1,20 @@
-/** touchmove事件中，获取多个触点中前两个触点的距离
- * @param {List} touches 触点列表
- * @returns {Number} 前两个触点的距离
+/** In the touchmove event, get the distance between the first two contacts of multiple contacts
+ * @param {List} touches Touch point list
+ * @returns {Number} Distance between the first two contacts
  */
-function getTouchesDistance(touchFirst, touchSecond) {
+function getTouchesDistance([touchFirst, touchSecond]) {
   const diffX = touchFirst.clientX - touchSecond.clientX;
   const diffY = touchFirst.clientY - touchSecond.clientY;
   const distance = Math.sqrt(diffX ** 2 + diffY ** 2);
   return distance;
 }
 
-/** 获取裁剪框的最佳位置
- * @param {Number} boxWidth 外部容器宽度
- * @param {Number} boxHeight 外部容器高度
- * @param {Number} cropAspectRatio 裁剪框的宽高比
- * @param {Number} cropSizeRatio 裁剪框占外部容器的比例（以contain的位置来计算）
- * @returns {Object} 裁剪框在外部容器中的比例信息
+/** Get the best position of the crop
+ * @param {Number} boxWidth width of box
+ * @param {Number} boxHeight height of box
+ * @param {Number} cropAspectRatio Aspect ratio of crop
+ * @param {Number} cropSizeRatio The proportion of the crop in the box（calculate in the style of "contain"）
+ * @returns {Object} The proportion information of the crop in the box
  */
 function getCropPosition(boxWidth, boxHeight, cropAspectRatio, cropSizeRatio) {
   const boxRatio = boxWidth / boxHeight;
@@ -22,7 +22,7 @@ function getCropPosition(boxWidth, boxHeight, cropAspectRatio, cropSizeRatio) {
   let width;
   let top;
   let left;
-  // 这里是实际数值
+  // Here are the actual values
   if (boxRatio > cropAspectRatio) {
     height = cropSizeRatio * boxHeight;
     width = height * cropAspectRatio;
@@ -34,7 +34,7 @@ function getCropPosition(boxWidth, boxHeight, cropAspectRatio, cropSizeRatio) {
     top = (boxHeight - height) / 2;
     left = (boxWidth - width) / 2;
   }
-  // 这里是比例
+  // Here is the ratio
   height /= boxHeight;
   width /= boxWidth;
   top /= boxHeight;
@@ -44,16 +44,24 @@ function getCropPosition(boxWidth, boxHeight, cropAspectRatio, cropSizeRatio) {
   };
 }
 
+/** Functions that handle scaling
+ * @param {Number} params.boxWidth width of box
+ * @param {Number} params.boxHeight height of box
+ * @param {Number} params.cropAspectRatio  Aspect ratio of crop
+ * @param {Number} params.cropSizeRatio The proportion of the crop in the box（calculate in the style of "contain"）
+ * @param {Boolean} params.isCircle width of box
+ * @returns {Object} base64 info of picture
+ */
 export function initStaticPosition({
   boxWidth, boxHeight, cropAspectRatio, cropSizeRatio, isCircle,
 }) {
   return {
-    // 容器
+    // box
     box: {
       width: boxWidth,
       height: boxHeight,
     },
-    // 裁剪框在容器中的位置
+    // Position of the crop box in the box
     crop: {
       ...getCropPosition(boxWidth, boxHeight, cropAspectRatio, cropSizeRatio),
       isCircle,
@@ -62,31 +70,36 @@ export function initStaticPosition({
   };
 }
 
-
+/** Functions that handle scaling
+ * @param {Object} dynamicPosition Dynamic position information
+ * @param {Object} staticPosition Static position information
+ * @param {Object} img Image information
+ * @param {Object} e Touch event object
+ */
 export function handleZoom(dynamicPosition, staticPosition, img, e) {
   const { box, crop } = staticPosition;
   const cropRealWidth = box.width * crop.width;
   const cropRealHeight = box.height * crop.height;
   const { touchInfo } = dynamicPosition;
-  // 保存前两个触点位置信息
+  // Save the position information of the first two touch points
   const [touchFirst, touchSecond] = e.touches;
-  const curTouchesDistance = getTouchesDistance(touchFirst, touchSecond);
+  const curTouchesDistance = getTouchesDistance([touchFirst, touchSecond]);
   const { clientX: touchFirstX, clientY: touchFirstY } = touchFirst;
   const { clientX: touchSecondX, clientY: touchSecondY } = touchSecond;
 
-  // 判断缩放开始
+  // Judging the start of zooming
   if (touchInfo.startDistance === 0) {
     touchInfo.startDistance = curTouchesDistance;
-    // 记录一些用于缩放临时数据
+    // Record some temporary data for scaling
     touchInfo.startLeft = dynamicPosition.left;
     touchInfo.startTop = dynamicPosition.top;
     touchInfo.startWidth = dynamicPosition.width;
-    // 记录两指中点的位移
+    // Record the displacement of the midpoint of two fingers
     touchInfo.startCenterX = (touchFirstX + touchSecondX) / 2;
     touchInfo.startCenterY = (touchFirstY + touchSecondY) / 2;
     return;
   }
-  // 计算缩放时候的移动距离
+  // Calculate the moving distance when zooming
   const centerX = (touchFirstX + touchSecondX) / 2;
   const centerY = (touchFirstY + touchSecondY) / 2;
   const diffX = centerX - touchInfo.startCenterX;
@@ -94,7 +107,7 @@ export function handleZoom(dynamicPosition, staticPosition, img, e) {
   const temporaryXRate = diffX / cropRealWidth;
   const temporaryYRate = diffY / cropRealHeight;
 
-  // todo 待优化成距离两指中心的缩放
+  // todo: Optimized to zoom from the center of two fingers
   touchInfo.curDistance = curTouchesDistance;
   const width = (touchInfo.curDistance / touchInfo.startDistance) * touchInfo.startWidth;
   const zoomWidthRate = dynamicPosition.width - touchInfo.startWidth;
@@ -104,8 +117,10 @@ export function handleZoom(dynamicPosition, staticPosition, img, e) {
   Object.assign(dynamicPosition, { width, left, top });
 }
 
-/** 图片溢出就把图片移动回裁剪框内
- * @param {Number} positionInfoData 图片移动的位置信息
+/** When the picture overflows, move the picture back to the crop box
+ * @param {Object} img Image information
+ * @param {Object} crop Position information of crop container
+ * @param {Object} dynamicPosition Dynamic position data
  */
 function overflow(img, crop, dynamicPosition) {
   let { width, left, top } = dynamicPosition;
@@ -114,54 +129,54 @@ function overflow(img, crop, dynamicPosition) {
   const { aspectRatio: imgAspectRatio } = img;
   if (rotate % 180 === 0) {
     const heightRate = (width * cropAspectRatio) / imgAspectRatio;
-    // 左边
+    // left
     if (left > 0) {
       left = 0;
     }
-    // 上边
+    // top
     if (top > 0) {
       top = 0;
     }
-    // 宽度
+    // width
     if (width < 1 && imgAspectRatio < cropAspectRatio) {
       width = 1;
     }
-    // 高度
+    // height
     if (heightRate < 1 && imgAspectRatio >= cropAspectRatio) {
       width = imgAspectRatio / cropAspectRatio;
     }
-    // 右边
+    // right
     if (left + width < 1) {
       left = 1 - width;
     }
-    // 下边
+    // bottom
     if (heightRate + top < 1) {
       top = 1 - heightRate;
     }
   } else {
     const leftRate = ((imgAspectRatio - 1) / imgAspectRatio / 2) * width;
     const topRate = -leftRate * cropAspectRatio;
-    // 右边
+    // right
     if (left + (width / imgAspectRatio) + leftRate < 1) {
       left = 1 - (width / imgAspectRatio) - leftRate;
     }
-    // 左边
+    // left
     if (left + leftRate > 0) {
       left = -leftRate;
     }
-    // 宽度
+    // width
     if (width / imgAspectRatio < 1) {
       width = imgAspectRatio;
     }
-    // 上边
+    // top
     if (left + topRate > 0) {
       left = -topRate;
     }
-    // 下边
+    // bottom
     if ((width * cropAspectRatio) + top + topRate < 1) {
       top = 1 - (width * cropAspectRatio) - topRate;
     }
-    // 高度
+    // height
     if (width * cropAspectRatio < 1) {
       width = 1 / cropAspectRatio;
     }
@@ -169,11 +184,13 @@ function overflow(img, crop, dynamicPosition) {
   Object.assign(dynamicPosition, { width, left, top });
 }
 
-/** 图片溢出就把图片移动回裁剪框内
- * @param {Number} positionInfoData 图片移动的位置信息
+/** When the picture overflows, move the picture back to the crop box
+ * @param {Object} img Image information
+ * @param {Object} crop Position information of crop container
+ * @param {Object} dynamicPosition Dynamic position data
  */
 export function handleOverflow(img, crop, dynamicPosition) {
-  // 判断溢出需要执行两次
+  // The method of judging overflow needs to be executed twice
   overflow(img, crop, dynamicPosition);
   overflow(img, crop, dynamicPosition);
 }
