@@ -192,10 +192,10 @@ export default class MobileAvatarCropBox {
       filter: isMoving ? 'brightness(50%)' : 'blur(15px) brightness(50%)',
     });
     Object.assign(this._dom.moveImg.style, {
-      transition: `all ${isMoving ? 0 : 0.2}s`,
+      transition: `all ${isMoving ? 0 : 0.3}s`,
     });
     Object.assign(this._dom.bgPicture.style, {
-      transition: `all ${isMoving ? 0 : 0.2}s`,
+      transition: `all ${isMoving ? 0 : 0.3}s`,
     });
   }
 
