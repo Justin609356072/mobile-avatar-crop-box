@@ -194,3 +194,39 @@ export function handleOverflow(img, crop, dynamicPosition) {
   overflow(img, crop, dynamicPosition);
   overflow(img, crop, dynamicPosition);
 }
+
+/** Get cropped pictures by location information
+ * @param {Object} img Image information
+ * @param {Object} crop Position information of crop container
+ * @param {Object} dynamicPosition Dynamic position data
+ * @returns {String} base64 info of picture
+ */
+export async function getImage(img, crop, dynamicPosition) {
+  const {
+    width, left, top, rotate,
+  } = dynamicPosition;
+  const { aspectRatio: cropAspectRatio } = crop;
+  const { aspectRatio: imgAspectRatio, originalPicture } = img;
+
+  const canvas = document.createElement('canvas');
+  const canvasWidth = 750;
+
+  canvas.width = canvasWidth;
+  canvas.height = canvasWidth / cropAspectRatio;
+  const ctx = canvas.getContext('2d');
+  const drawLeft = canvas.width * left;
+  const drawTop = canvas.height * top;
+  const drawWidth = canvas.width * width;
+  const drawHeight = (canvas.width * width) / imgAspectRatio;
+  const rotateCenterX = drawLeft + drawWidth / 2;
+  const rotateCenterY = drawTop + drawHeight / 2;
+
+  ctx.translate(rotateCenterX, rotateCenterY);
+  ctx.rotate((Math.PI / 180) * rotate);
+  ctx.translate(-rotateCenterX, -rotateCenterY);
+  ctx.drawImage(originalPicture, drawLeft, drawTop, drawWidth, drawHeight);
+
+  const imgBase64 = canvas.toDataURL('image/png');
+
+  return imgBase64;
+}
