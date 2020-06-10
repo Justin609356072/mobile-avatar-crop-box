@@ -202,12 +202,19 @@ export default class MobileAvatarCropBox {
     };
     Object.assign(this._dom.box.style, boxStyle);
     Object.assign(this._dom.crop.style, cropStyle);
-    this.toggleGaussianBlur(true);
+    this.toggleGaussianBlur(false);
   }
 
   toggleGaussianBlur(isMoving = false) {
+    console.log(this._dom.bgPictureContainer.style.filter);
     Object.assign(this._dom.bgPictureContainer.style, {
-      filter: isMoving ? 'blur(15px) brightness(50%)' : 'brightness(50%)',
+      filter: isMoving ? 'brightness(50%)' : 'blur(15px) brightness(50%)',
+    });
+    Object.assign(this._dom.moveImg.style, {
+      transition: `all ${isMoving ? 0 : 0.2}s`,
+    });
+    Object.assign(this._dom.bgPicture.style, {
+      transition: `all ${isMoving ? 0 : 0.2}s`,
     });
   }
 
@@ -221,7 +228,7 @@ export default class MobileAvatarCropBox {
 
   handleTouchMove(e) {
     this.updateDynamicPositionInfo();
-    this.toggleGaussianBlur(false);
+    this.toggleGaussianBlur(true);
 
     const { touchInfo } = this._dynamicPosition;
     const cropRealWidth = this._staticPosition.box.width * this._staticPosition.crop.width;
@@ -259,7 +266,7 @@ export default class MobileAvatarCropBox {
 
   handleTouchEnd(e) {
     if (e.touches.length === 0) {
-      this.toggleGaussianBlur(true);
+      this.toggleGaussianBlur(false);
       handleOverflow(this._img, this._staticPosition.crop, this._dynamicPosition);
       Object.assign(this._dynamicPosition.touchInfo, initTouchInfo());
       this.updateDynamicPositionInfo();
