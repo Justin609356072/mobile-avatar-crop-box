@@ -114,7 +114,12 @@ export function handleZoom(dynamicPosition, staticPosition, img, e) {
   const zoomHeightRate = zoomWidthRate * img.aspectRatio * crop.aspectRatio;
   const left = touchInfo.startLeft - (zoomWidthRate / 2) + temporaryXRate;
   const top = touchInfo.startTop - (zoomHeightRate / 2) + temporaryYRate;
-  Object.assign(dynamicPosition, { width, left, top });
+  const result = { left, top };
+  // Maximum magnification
+  if (width < 3) {
+    result.width = width;
+  }
+  Object.assign(dynamicPosition, result);
 }
 
 /** When the picture overflows, move the picture back to the crop box

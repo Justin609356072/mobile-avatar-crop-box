@@ -7,7 +7,6 @@ import { loadImage, getParentNode } from './tool';
 // todo resize
 // Safari 缩放兼容性,Object.assign
 // 节流
-// 最大缩放比例
 
 // tofix
 // 双指放开闪动
