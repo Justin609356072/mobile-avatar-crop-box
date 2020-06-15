@@ -69,8 +69,8 @@ export default class MobileAvatarCropBox {
     const {
       id, // DOM id
       isCircle = false,
-      boxWidth = window.screen.availWidth,
-      boxHeight = window.screen.availHeight,
+      boxWidth = window.innerWidth,
+      boxHeight = window.innerHeight,
       cropAspectRatio = 1,
       cropSizeRatio = 0.8, // The proportion of the size of the crop to the box
       // showOptionBar = true,
