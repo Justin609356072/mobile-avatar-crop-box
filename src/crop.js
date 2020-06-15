@@ -212,7 +212,7 @@ export default class MobileAvatarCropBox {
 
   toggleGaussianBlur(isMoving = false) {
     Object.assign(this._dom.bgPictureContainer.style, {
-      filter: isMoving ? 'blur(0px) brightness(50%)' : 'blur(15px) brightness(50%)',
+      filter: isMoving ? 'blur(0px) brightness(70%)' : 'blur(30px) brightness(50%)',
     });
     Object.assign(this._dom.moveImg.style, {
       transition: `all ${isMoving ? 0 : 0.2}s`,
