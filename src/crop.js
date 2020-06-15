@@ -3,7 +3,7 @@ import {
   initStaticPosition, handleZoom, handleOverflow, getImage,
 } from './function';
 import {
-  loadImage, getParentNode, getClassName, getCssValue,
+  loadImage, getParentNode, getClassName,
 } from './tool';
 
 // todo resize
@@ -110,6 +110,16 @@ export default class MobileAvatarCropBox {
         }
       });
     });
+
+    // The mask layer prevents the default image long press event of the browser
+    styleList.push(`.${getClassName('box')}:after{
+      content: " ";
+      display: "block";
+      width:100%;
+      height:100%;
+      position: absolute;
+      z-index:10;
+    }`);
 
     const style = document.createElement('style');
     // Set the style attribute
