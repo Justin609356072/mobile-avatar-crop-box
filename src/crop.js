@@ -2,7 +2,9 @@
 import {
   initStaticPosition, handleZoom, handleOverflow, getImage,
 } from './function';
-import { loadImage, getParentNode } from './tool';
+import {
+  loadImage, getParentNode, getClassName, getCssValue,
+} from './tool';
 
 // todo resize
 // Safari 缩放兼容性,Object.assign
@@ -96,15 +98,27 @@ export default class MobileAvatarCropBox {
         bgPictureContainer: 'width:100%;height:100%;position:absolute;top:0;left:0;transition:all 0.3s;',
       },
     };
+
+    const styleList = [];
     Object.keys(domList).forEach((tag) => {
       Object.keys(domList[tag]).forEach((key) => {
         this._dom[key] = document.createElement(tag);
-        this._dom[key].style = domList[tag][key];
+        this._dom[key].classList.add(getClassName(key));
+        styleList.push(`.${getClassName(key)}{${domList[tag][key]}}`);
         if (tag === 'img') {
           this._dom[key].src = imgLink;
         }
       });
     });
+
+    const style = document.createElement('style');
+    // Set the style attribute
+    style.type = 'text/css';
+    // Write style to style
+    style.innerHTML = styleList.join('');
+    // Append the style in the head tag
+    document.getElementsByTagName('head')[0].appendChild(style);
+
     // The structure inside the box is as follows:
     // box
     //   |____bgPictureContainer____bgPicture
@@ -140,7 +154,7 @@ export default class MobileAvatarCropBox {
   }
 
   updateDynamicPositionInfo() {
-    // 动态的位置数据主要针对moveImg和bgPicture元素
+    // Dynamic position data is mainly for moveImg and bgPicture elements
     const {
       left, top, rotate, width,
     } = this._dynamicPosition;
