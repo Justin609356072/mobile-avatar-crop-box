@@ -185,7 +185,7 @@ export default class MobileAvatarCropBox {
 
   updateStaticPositionInfo() {
     this.toggleGaussianBlur(false);
-    // 静态的位置数据初始化一次，主要针对容器（box、crop、bgPictureContainer）之间的相对位置，
+    // Static position data is initialized once (mainly for box、crop、bgPictureContainer)
     const boxStyle = {
       width: `${this._staticPosition.box.width}px`,
       height: `${this._staticPosition.box.height}px`,
