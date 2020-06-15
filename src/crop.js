@@ -93,7 +93,7 @@ export default class MobileAvatarCropBox {
       div: {
         box: 'position:fixed;top:0;left:0;overflow:hidden;background-color:#333;', // todo 临时样式 'position:relative;overflow:hidden;background-color:#333;';
         crop: `position:absolute;overflow:hidden;background-color:#555;border-radius:${this._staticPosition.crop.isCircle ? '50%' : 0};`,
-        bgPictureContainer: 'width:100%;height:100%;position:absolute;top:0;left:0;',
+        bgPictureContainer: 'width:100%;height:100%;position:absolute;top:0;left:0;transition:all 0.3s;',
       },
     };
     Object.keys(domList).forEach((tag) => {
@@ -170,6 +170,7 @@ export default class MobileAvatarCropBox {
   }
 
   updateStaticPositionInfo() {
+    this.toggleGaussianBlur(false);
     // 静态的位置数据初始化一次，主要针对容器（box、crop、bgPictureContainer）之间的相对位置，
     const boxStyle = {
       width: `${this._staticPosition.box.width}px`,
@@ -183,13 +184,11 @@ export default class MobileAvatarCropBox {
     };
     Object.assign(this._dom.box.style, boxStyle);
     Object.assign(this._dom.crop.style, cropStyle);
-    this.toggleGaussianBlur(false);
   }
 
   toggleGaussianBlur(isMoving = false) {
-    console.log(this._dom.bgPictureContainer.style.filter);
     Object.assign(this._dom.bgPictureContainer.style, {
-      filter: isMoving ? 'brightness(50%)' : 'blur(15px) brightness(50%)',
+      filter: isMoving ? 'blur(0px) brightness(50%)' : 'blur(15px) brightness(50%)',
     });
     Object.assign(this._dom.moveImg.style, {
       transition: `all ${isMoving ? 0 : 0.3}s`,
